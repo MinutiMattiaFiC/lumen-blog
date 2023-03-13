@@ -18,8 +18,11 @@ use Laravel\Lumen\Routing\Router;
 
 
 $router->get('/status', function (Request $request) use ($router) {
+    phpinfo();
+
     try {
         DB::connection()->getPdo();
+
         return 'ok';
     } catch (\Exception $e) {
         return 'Errore di connessione al database: ' . $e->getMessage();
@@ -40,12 +43,9 @@ $router->get('/test',function (Request $request) use ($router)
 /*Route dei post*/
 
 $router->group(['prefix' => 'posts'], function () use ($router) {
-    $router->get('', 'PostController@selectAll');
-    $router->post('', 'PostController@create');
+    $router->get('', 'PostController@selectAll'); //ok
+    $router->get('{id}', 'PostController@show'); //ok
 
-    $router->get('{id}', 'PostController@show');
-
-    $router->delete('{id}', 'PostController@deletePost');  /*Da aggiungere auth */
 
 });
 
@@ -65,23 +65,35 @@ $router->group(['prefix' => 'comments'], function () use ($router) {
 
         return response()->json($comments);
     });
-    $router->post('', 'CommentController@create');
+
 
     $router->get('{commentId}', 'CommentController@show');
 
-    $router->delete('{commentId}', 'CommentController@delete');
+
 
 });
 
 
+$router->group(['middleware' => 'auth'], function () use ($router) {
+
+    $router->group(['prefix' => 'comments'], function () use ($router) {
+        $router->delete('{commentId}', 'CommentController@delete');
+        $router->post('', 'CommentController@create');
+
+        $router->group(['prefix' => 'posts'], function () use ($router) {
+            $router->post('', 'PostController@create');
+            $router->delete('{id}', 'PostController@deletePost');
+        });
+    });
+});
 
 
 
 /*Route degli utenti*/
 
 $router->group(['prefix' => 'auth'], function () use ($router) {
-    $router->post('/register', 'UserController@register');
-    $router->post('/login', 'UserController@login');
-
+    $router->post('/register', 'AuthController@register'); //ok
+    $router->post('/login', 'AuthController@login');
+    $router->post('/check', 'AuthController@check');
 
 });

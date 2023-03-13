@@ -19,6 +19,17 @@ class CommentController
         return view('comment', ['comment' => $comment]);
     }
 
+    public function showComment($request){
+        $postId = $request->input('post_id');
+
+        $comments = DB::table('Comment')
+            ->join('user', 'Comment.user_id', '=', 'user.id')
+            ->select('Comment.id', 'Comment.content', 'user.first_name', 'user.email')
+            ->where('Comment.post_id', '=', $postId)
+            ->get();
+
+        return response()->json($comments);
+    }
     public function delete($commentId)
     {
         DB::table('Comment')->where('id', $commentId)->delete();
@@ -44,4 +55,3 @@ class CommentController
     }
 
 }
-
