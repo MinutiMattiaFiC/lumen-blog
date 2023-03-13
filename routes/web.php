@@ -70,16 +70,17 @@ $router->group(['prefix' => 'comments'], function () use ($router) {
 
 
 $router->group(['middleware' => ['auth']], function () use ($router) {
-    $router->delete('posts/{id}', 'PostController@deletePost');
+
     $router->group(['prefix' => 'comments'], function () use ($router) {
 
         $router->delete('{commentId}', 'CommentController@delete');
         $router->post('', 'CommentController@create');
+    });
 
-        $router->group(['prefix' => 'posts'], function () use ($router) {
-            $router->post('', 'PostController@create');
+    $router->group(['prefix' => 'posts'], function () use ($router) {
+        $router->post('', 'PostController@create');
+        $router->delete('{id}', 'PostController@deletePost');
 
-        });
     });
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\user;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -67,10 +68,21 @@ class PostController extends Controller
     }
 
 
-    public function deletePost($id)
+   public function deletePost($id)
     {
+        // Recupera l'utente autenticato
+        $user = Auth::guard('api')->user();
+
+        // Verifica che il post appartenga all'utente
+        $post = DB::table('Post')->where('id', $id)->first();
+        if (!$post || $post->user_id !== $user->id) {
+            return response()->json(['error' => 'Post not found or does not belong to user'], 404);
+        }
+
+        // Cancella il post
         DB::table('Post')->where('id', $id)->delete();
         return response()->json([]);
     }
+
 
 }
