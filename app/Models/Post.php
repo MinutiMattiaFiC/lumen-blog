@@ -35,6 +35,6 @@ class Post extends Model
     /**
      * @var string
      */
-    protected $table = 'posts';
+    protected $table = 'Post';
 
 }

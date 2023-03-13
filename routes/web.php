@@ -51,7 +51,6 @@ $router->group(['prefix' => 'posts'], function () use ($router) {
 
 /*Route dei commenti*/
 
-
 $router->group(['prefix' => 'comments'], function () use ($router) {
 
     $router->get('', function (Illuminate\Http\Request $request) use ($router) {
@@ -63,26 +62,23 @@ $router->group(['prefix' => 'comments'], function () use ($router) {
             ->where('Comment.post_id', '=', $postId)
             ->get();
 
-        return response()->json($comments);
+        return response()->json($comments); //ok
     });
-
-
-    $router->get('{commentId}', 'CommentController@show');
-
-
+    $router->get('{commentId}', 'CommentController@show');//ok
 
 });
 
 
-$router->group(['middleware' => 'auth'], function () use ($router) {
-
+$router->group(['middleware' => ['auth']], function () use ($router) {
+    $router->delete('posts/{id}', 'PostController@deletePost');
     $router->group(['prefix' => 'comments'], function () use ($router) {
+
         $router->delete('{commentId}', 'CommentController@delete');
         $router->post('', 'CommentController@create');
 
         $router->group(['prefix' => 'posts'], function () use ($router) {
             $router->post('', 'PostController@create');
-            $router->delete('{id}', 'PostController@deletePost');
+
         });
     });
 });

@@ -34,7 +34,7 @@ class Comment extends Model
     /**
      * @var string
      */
-    protected $table = 'comments';
+    protected $table = 'Comment';
 
     /**
      * @var array

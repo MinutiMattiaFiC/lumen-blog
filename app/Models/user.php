@@ -44,6 +44,6 @@ class user extends Model
     /**
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'user';
 
 }

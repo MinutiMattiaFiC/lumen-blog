@@ -3,7 +3,7 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Models\user;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,22 +33,23 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // Attempt to authenticate the user
-        $credentials = $request->only('email', 'password');
-        if (Auth::guard('api')->attempt($credentials)) {
-            // Generate new api token
-            $apiToken = bin2hex(random_bytes(10));
+        $user = user::where('email', $request->input('email'))->first();
 
-            // Update the user's api token in the database
-            $user = Auth::guard('api')->user();
-            $user->api_token = $apiToken;
-            $user->save();
-
-            // Return the api token
-            return response()->json(['api_token' => $apiToken], 200);
-        } else {
-            return response()->json(['error' => 'Invalid email or password'], 401);
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
         }
+
+        // Generate new token
+                $apiToken = bin2hex(random_bytes(10));
+
+        // Update user with new token
+                $user->api_token = $apiToken;
+                $user->save();
+
+        // Return token as part of response
+                return response()->json(['token' => $apiToken]);
+
+
     }
 
 
