@@ -11,36 +11,61 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function selectAll()
+    public function showAll()
     {
 
-        $posts = DB::table('Post')
+        $posts = Post::select(
+            'Post.id',
+            'Post.title',
+            'Post.content',
+            'user.email',
+            'user.first_name',
+            'user.last_name',
+            'user.picture',
+            \DB::raw('COUNT(Comment.id) as Comment_count'),
+            \DB::raw("CONCAT(user.first_name, ' ', user.last_name) as full_name")
+        )
             ->join('user', 'Post.user_id', '=', 'user.id')
             ->leftJoin('Comment', 'Post.id', '=', 'Comment.post_id')
-            ->select(
-                'Post.id',
-                'Post.title',
-                'Post.content',
-                'user.email',
-                'user.first_name',
-                'user.last_name',
-                DB::raw('COUNT(Comment.id) as Comment_count'),
-                DB::raw("CONCAT(user.first_name, ' ', user.last_name) as full_name"),
-                'user.picture'
-            )
             ->groupBy('Post.id')
             ->orderByDesc('Post.created_at')
             ->get();
 
         return response()->json($posts);
 
+
     }
 
-    public function show($id)
+
+    public function show($id, Request $request)
     {
-        $post = DB::table('Post')->where('id', $id)->first();
-        return view('post', ['post' => $post]);
+        $comments = null; //se nella richiesta non è presente il parametro comments non vera caricato nessun commento
+        $post = Post::with('user')->findOrFail($id);
+
+        if (!$post) {
+            abort(404);
+        }
+
+        if($request->input('comments')){
+            $commentCount = $request->input('comments');
+            $comments = $post->Comment()
+                ->with('user')
+                ->orderBy('created_at', 'desc')
+                ->take($commentCount)
+                ->get();
+        }
+
+        return response()->json([
+            'post' => $post,
+            'comments' => $comments,
+        ]);
     }
+
+
+
+
+
+
 
     public function create(Request $request)
     {

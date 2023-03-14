@@ -55,7 +55,6 @@ class user extends Model
     Public function Comment(){
         return $this -> hasMany(Comment::class);
     }
-
     /**
      * @var string
      */

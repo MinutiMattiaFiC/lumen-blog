@@ -43,7 +43,7 @@ $router->get('/test',function (Request $request) use ($router)
 /*Route dei post*/
 
 $router->group(['prefix' => 'posts'], function () use ($router) {
-    $router->get('', 'PostController@selectAll'); //ok
+    $router->get('', 'PostController@showAll'); //ok
     $router->get('{id}', 'PostController@show'); //ok
 
 
@@ -74,7 +74,7 @@ $router->group(['middleware' => ['auth']], function () use ($router) {
     $router->group(['prefix' => 'comments'], function () use ($router) {
 
         $router->delete('{commentId}', 'CommentController@delete'); //ok
-        $router->post('', 'CommentController@create');
+        $router->post('', 'CommentController@create'); //ok
     });
 
     $router->group(['prefix' => 'posts'], function () use ($router) {

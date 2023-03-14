@@ -13,7 +13,8 @@ class Comment extends Model
      * @var array
      */
     protected $fillable = [
-        'text',
+        'content',
+        'post_id',
     ];
 
     /**
@@ -28,9 +29,11 @@ class Comment extends Model
      */
     protected $hidden = [
         'user_id',
-        'post_id',
     ];
     public function user(){
+        return $this->belongsTo(user::class);
+    }
+    public function Post(){
         return $this->belongsTo(Post::class);
     }
 

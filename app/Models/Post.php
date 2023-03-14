@@ -37,6 +37,9 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+    Public function Comment(){
+        return $this -> hasMany(Comment::class);
+    }
 
     /**
      * @var string
