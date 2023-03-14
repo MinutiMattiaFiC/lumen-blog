@@ -32,8 +32,6 @@ class PostController extends Controller
             ->get();
 
         return response()->json($posts);
-
-
     }
 
 
@@ -60,12 +58,6 @@ class PostController extends Controller
             'comments' => $comments,
         ]);
     }
-
-
-
-
-
-
 
     public function create(Request $request)
     {
@@ -103,6 +95,33 @@ class PostController extends Controller
         // Cancella il post
         DB::table('Post')->where('id', $id)->delete();
         return response()->json([]);
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $post = Post::findOrFail($id);
+        $user = Auth::user();
+
+        // controllo se l'utente possiede il post
+        if ($post->user_id != $user->id) {
+            return response()->json(['error' => 'You do not have permission to edit this post'], 403);
+        }
+
+        // Vvalidazione dati
+        $this->validate($request, [
+            'title' => 'required|max:255',
+            'content' => 'required'
+        ]);
+
+        // Update
+        $post->title = $request->input('title');
+        $post->content = $request->input('content');
+        $post->save();
+
+        // ritorno il post modificato con le info del creatore
+        $post = Post::with('user')->findOrFail($id);
+        return response()->json(['post' => $post]);
     }
 
 

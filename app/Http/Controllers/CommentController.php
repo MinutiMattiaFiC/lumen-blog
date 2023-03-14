@@ -20,13 +20,12 @@ class CommentController extends Controller
         return view('comment', ['comment' => $comment]);
     }
 
-    public function showComment($request){
+    public function showComment(Request $request){
         $postId = $request->input('post_id');
 
-        $comments = DB::table('Comment')
+        $comments = Comment::where('post_id', $postId)
             ->join('user', 'Comment.user_id', '=', 'user.id')
-            ->select('Comment.id', 'Comment.content', 'user.first_name', 'user.email')
-            ->where('Comment.post_id', '=', $postId)
+            ->select('Comment.id', 'Comment.content', 'user.email')
             ->get();
 
         return response()->json($comments);
@@ -66,6 +65,20 @@ class CommentController extends Controller
         // Restituzione della risposta vuota
         return response()->json([]);
 
+    }
+    public function update(Request $request, $commentId)
+    {
+        $comment = Comment::findOrFail($commentId);
+
+        // controllo se possiedo il commento
+        if ($comment->user_id != Auth::user()->id) {
+            return response()->json(['error' => 'You are not authorized to edit this comment'], 403);
+        }
+
+        $comment->content = $request->input('content');
+        $comment->save();
+
+        return response()->json(['comment' => $comment]);
     }
 
 }
