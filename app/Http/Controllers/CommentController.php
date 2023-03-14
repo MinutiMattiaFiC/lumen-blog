@@ -32,9 +32,17 @@ class CommentController
     }
     public function delete($commentId)
     {
-        DB::table('Comment')->where('id', $commentId)->delete();
+        $user = Auth::user();
+        $comment = $user->Comment()->find($commentId);
+
+        if (!$comment) {
+            return response()->json(['error' => 'Comment not found or it s not yours'], 404);
+        }
+
+        $comment->delete();
         return response()->json([]);
     }
+
 
     public function create(Request $request)
     {

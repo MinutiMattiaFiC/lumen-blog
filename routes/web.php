@@ -73,13 +73,13 @@ $router->group(['middleware' => ['auth']], function () use ($router) {
 
     $router->group(['prefix' => 'comments'], function () use ($router) {
 
-        $router->delete('{commentId}', 'CommentController@delete');
+        $router->delete('{commentId}', 'CommentController@delete'); //ok
         $router->post('', 'CommentController@create');
     });
 
     $router->group(['prefix' => 'posts'], function () use ($router) {
-        $router->post('', 'PostController@create');
-        $router->delete('{id}', 'PostController@deletePost');
+        $router->post('', 'PostController@create'); //ok
+        $router->delete('{id}', 'PostController@deletePost'); //ok
 
     });
 });
@@ -90,7 +90,7 @@ $router->group(['middleware' => ['auth']], function () use ($router) {
 
 $router->group(['prefix' => 'auth'], function () use ($router) {
     $router->post('/register', 'AuthController@register'); //ok
-    $router->post('/login', 'AuthController@login');
-    $router->post('/check', 'AuthController@check');
+    $router->post('/login', 'AuthController@login'); //ok
+    $router->post('/check', 'AuthController@check'); //ok
 
 });

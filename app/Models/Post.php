@@ -16,6 +16,7 @@ class Post extends Model
     protected $fillable = [
         'text',
         'title',
+        'content',
     ];
 
     /**
@@ -31,6 +32,11 @@ class Post extends Model
     protected $hidden = [
         'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * @var string

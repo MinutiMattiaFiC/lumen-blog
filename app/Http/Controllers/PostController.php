@@ -53,25 +53,21 @@ class PostController extends Controller
         // Ottenere l'utente loggato
         $user = Auth::user();
 
-        // Inserimento dei dati nel database
-        $post = DB::table('Post')->insert([
-            'user_id' => $user->id,
+        // Creazione del post associato all'utente loggato
+        $post = new Post([
             'content' => $request->input('content'),
-            'title' => $request->input('title'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-
+            'title' => $request->input('title')
         ]);
+        $user->Post()->save($post);
 
         // Restituzione della risposta vuota
         return response()->json([]);
     }
 
-
-   public function deletePost($id)
+    public function deletePost($id)
     {
         // Recupera l'utente autenticato
-        $user = Auth::guard('api')->user();
+        $user = Auth::user();
 
         // Verifica che il post appartenga all'utente
         $post = DB::table('Post')->where('id', $id)->first();

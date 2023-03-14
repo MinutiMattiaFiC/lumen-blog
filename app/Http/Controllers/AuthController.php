@@ -19,7 +19,7 @@ class AuthController extends Controller
             'email' => $request ->input('email'),
             'password' =>Hash::make($request->input('password')),
 
-            'api_token' => bin2hex(random_bytes(10)) //genera una stringa casuale di 10 caratteri esadecimali
+
         ]);
         return response()->json(['user' => $user], 201);
     }
@@ -56,7 +56,18 @@ class AuthController extends Controller
 
     public function check(): \Illuminate\Http\JsonResponse
     {
-        return response()->json(Auth::user());
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+
+        return response()->json([
+            'user' => $user,
+
+        ]);
     }
+
+
 
 }
