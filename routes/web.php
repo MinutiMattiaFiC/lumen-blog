@@ -43,7 +43,7 @@ $router->get('/test',function (Request $request) use ($router)
 /*Route dei post*/
 
 $router->group(['prefix' => 'posts'], function () use ($router) {
-    $router->get('', 'PostController@show All'); //ok
+    $router->get('', 'PostController@showAll'); //ok
     $router->get('{id}', 'PostController@show'); //ok
 
 
