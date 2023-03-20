@@ -23,9 +23,12 @@ class QueryLogMiddleware
         $queries = DB::getQueryLog();
 
         $data = json_decode($response->getContent(), true);
-        $data['queries'] = $queries;
 
-        $response->setContent(json_encode($data));
+
+        $response->setContent(json_encode([
+            'data' => $data,
+            'queries' => $queries
+        ]));
 
         return $response;
     }

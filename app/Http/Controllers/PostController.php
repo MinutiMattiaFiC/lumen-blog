@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\user;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Ramsey\Collection\Collection;
 
 class PostController extends Controller
 {
@@ -30,8 +31,8 @@ class PostController extends Controller
             ->groupBy('Post.id')
             ->orderByDesc('Post.created_at')
             ->get();
-
-        return response()->json($posts);
+        /** @var Collection $posts */
+        return $posts;
     }
 
 
@@ -44,19 +45,17 @@ class PostController extends Controller
             abort(404);
         }
 
-        if($request->input('comments')){
+        if ($request->input('comments')) {
             $commentCount = $request->input('comments');
-            $comments = $post->Comment()
-                ->with('user')
-                ->orderBy('created_at', 'desc')
-                ->take($commentCount)
-                ->get();
+            $post->load(['Comment'=>function($query) use ($commentCount){
+                $query->orderBy('created_at', 'desc')
+                    ->take($commentCount);
+            }]);
+
+
         }
 
-        return response()->json([
-            'post' => $post,
-            'comments' => $comments,
-        ]);
+        return $post;
     }
 
     public function create(Request $request)
@@ -121,7 +120,7 @@ class PostController extends Controller
 
         // ritorno il post modificato con le info del creatore
         $post = Post::with('user')->findOrFail($id);
-        return response()->json(['post' => $post]);
+        return $post;
     }
 
 

@@ -22,15 +22,16 @@ class Comment extends Model
      */
     protected $guarded = [
         'id',
+        'user_id',
     ];
 
     /**
      * @var array
      */
     protected $hidden = [
-        'user_id',
+
     ];
-    public function user(){
+    public function User(){
         return $this->belongsTo(user::class);
     }
     public function Post(){
@@ -42,12 +43,7 @@ class Comment extends Model
      */
     protected $table = 'Comment';
 
-    /**
-     * @var array
-     */
-    protected $with = [
-        'user',
-    ];
+
 
 
 }

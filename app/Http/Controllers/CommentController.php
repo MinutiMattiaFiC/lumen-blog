@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 
 
+use Couchbase\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Post;
@@ -28,9 +30,9 @@ class CommentController extends Controller
             ->select('Comment.id', 'Comment.content', 'user.email')
             ->get();
 
-        return response()->json($comments);
+        return $comments;
     }
-    public function delete($commentId)
+    public function delete($commentId) : JsonResponse
     {
         $user = Auth::user();
         $comment = $user->Comment()->find($commentId);
@@ -44,7 +46,7 @@ class CommentController extends Controller
     }
 
 
-    public function create(Request $request)
+    public function create(Request $request) : JsonResponse
     {
         // Validazione dei dati di input
         $this->validate($request, [
@@ -52,6 +54,7 @@ class CommentController extends Controller
             'post_id' => 'required|integer'
         ]);
 
+        /** @var \App\Models\user $user */
         // Ottenere l'utente loggato
         $user = Auth::user();
 
@@ -68,17 +71,18 @@ class CommentController extends Controller
     }
     public function update(Request $request, $commentId)
     {
+        /** @var Comment $comment */
         $comment = Comment::findOrFail($commentId);
 
         // controllo se possiedo il commento
         if ($comment->user_id != Auth::user()->id) {
-            return response()->json(['error' => 'You are not authorized to edit this comment'], 403);
+            return response(['error' => 'You are not authorized to edit this comment'], 403);
         }
 
         $comment->content = $request->input('content');
         $comment->save();
 
-        return response()->json(['comment' => $comment]);
+        return $comment;
     }
 
 }
