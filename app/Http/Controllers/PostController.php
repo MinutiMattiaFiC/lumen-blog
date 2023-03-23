@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
-use App\Models\user;
+use App\Models\User;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Ramsey\Collection\Collection;
@@ -35,10 +35,28 @@ class PostController extends Controller
         return $posts;
     }
 
+    public function loadComment($id,Request $request) {
+        $lastCommentId = $request->query('last_comment_id');
+        $numComments = $request->query('comments');
+
+        $query = Comment::where('post_id', $id)
+            ->orderBy('id', 'desc');
+
+        if ($lastCommentId) {
+            $query = $query->where('id', '<', $lastCommentId);
+        }
+
+        if ($numComments) {
+            $query = $query->limit($numComments);
+        }
+
+        $comments = $query->get();
+
+        return $comments;
+    }
 
     public function show($id, Request $request)
     {
-        $comments = null; //se nella richiesta non è presente il parametro comments non vera caricato nessun commento
         $post = Post::with('user')->findOrFail($id);
 
         if (!$post) {
@@ -48,7 +66,7 @@ class PostController extends Controller
         if ($request->input('comments')) {
             $commentCount = $request->input('comments');
             $post->load(['Comment'=>function($query) use ($commentCount){
-                $query->orderBy('created_at', 'desc')
+                $query->orderBy('id', 'desc')
                     ->take($commentCount);
             }]);
 

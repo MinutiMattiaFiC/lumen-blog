@@ -24,13 +24,14 @@ class Post extends Model
      */
     protected $guarded = [
         'id',
+        'user_id',
     ];
 
     /**
      * @var array
      */
     protected $hidden = [
-        'user_id',
+
     ];
 
     public function user()

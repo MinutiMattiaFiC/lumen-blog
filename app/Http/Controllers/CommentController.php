@@ -46,7 +46,7 @@ class CommentController extends Controller
     }
 
 
-    public function create(Request $request) : JsonResponse
+    public function create(Request $request)
     {
         // Validazione dei dati di input
         $this->validate($request, [
@@ -66,7 +66,7 @@ class CommentController extends Controller
         $user->Comment()->save($comment);
 
         // Restituzione della risposta vuota
-        return response()->json([]);
+        return $comment;
 
     }
     public function update(Request $request, $commentId)

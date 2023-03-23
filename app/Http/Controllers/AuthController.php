@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use App\Models\user;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,19 +9,21 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
-        //insert db
-        $user = DB::table('user')->insert([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request ->input('last_name'),
-            'email' => $request ->input('email'),
-            'password' =>Hash::make($request->input('password')),
+    public function register(Request $request) {
+        // Create new user instance
+        $user = new User;
+        $user->first_name = $request->input('first_name');
+        $user->last_name = $request->input('last_name');
+        $user->email = $request->input('email');
+        $user->password = Hash::make($request->input('password'));
+        $user->subscription = 'free';
+        $user->created_at = Carbon::now();
+        $user->updated_at = Carbon::now();
+        // Save user to database
+        $user->save();
 
-
-        ]);
-        return response()->json(['user' => $user], 201);
+        return response($user);
     }
-
 
     public function login(Request $request)
     {
@@ -45,7 +47,7 @@ class AuthController extends Controller
                 $user->save();
 
         // Return token as part of response
-                return response()->json(['token' => $apiToken]);
+                return $user;
 
 
     }

@@ -45,6 +45,7 @@ $router->get('/test',function (Request $request) use ($router)
 $router->group(['prefix' => 'posts'], function () use ($router) {
     $router->get('', 'PostController@showAll'); //ok
     $router->get('{id}', 'PostController@show'); //ok
+    $router->get('/load/{id}', 'PostController@loadComment'); //ok
 
 
 });
@@ -55,6 +56,7 @@ $router->group(['prefix' => 'comments'], function () use ($router) {
 
     $router->get('', 'CommentController@showComment');//ok
     $router->get('{commentId}', 'CommentController@show');//ok
+
 
 });
 
